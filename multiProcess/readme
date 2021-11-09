@@ -1,0 +1,40 @@
+-------------------   env ------------
+环境变量保存在  extern char **environ 中
+使用getenv函数获取环境变量值
+setenv  设置环境变量值
+unsetenv 删除环境变量name的值
+
+
+-----------------  process ------------
+getuid(): 获得进程实际用户
+geteuid(): 获得进程有效用户ID
+getgid()
+getegid()
+
+------------------  exec --------------
+exec族函数，在传入命令参数时要以NULL结尾 
+
+execl------  l  是指 list 即参数是list形式
+   execlp--  p  是 path ，即第一个参数可以使用path变量，比如使用 "ls"
+   execle--  e  是environ，即有环境变量表参与
+
+execv------  v  是指  vector  即参数是vector形式 
+   execvp
+   execve
+
+在exec/printps.c  中将所有进程信息打印到 文件dst.txt中
+实现方法基于调用 ps aux 会将信息输出到屏幕上，也就是标准输出文件
+在fork前打开了dst.txt函数，父子进程是共享此文件描述符的
+在fork前使用dup2 将标准输出文件描述符重定向到了dst.txt的文件描述符
+即dup(fd, STDOUT_FILENO),相当于STDOUT_FILENO复制了fd文件描述符
+（在一个进程的打开文件表中，前三个是标准输入、标准输出、标准错误）
+
+---------------  wait -------------
+wait函数
+
+传出的参数使用宏函数来获得信息
+WIFEXITED(status) 为非零说明子进程正常退出，然后使用
+WEXITSTATUS(status) 获得子进程退出的状态
+
+如果WIFSIGNALED(status) 为非零，说明进程异常中止，然后使用
+WTERMSIG(status),此宏函数返回使得进程终止的信号的编号(使用 kill -l查看信号)
