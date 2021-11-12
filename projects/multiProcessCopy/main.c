@@ -59,15 +59,20 @@ int main(int argc, char *argv[]) {
 		if(pid[i] == -1) { //创建出错
 			print_error("fork");
 		} else if(pid[i] == 0) {    //子进程
+			char pWriteLen[10];//子进程要写的长度避免类型转换引起的错误
+			char off[10] ;//偏移
 			if(i == PROCESS_NUM - 1) {
-				writeLen = srcStat.st_size - writeLen * i;
+				sprintf(pWriteLen,"%d",srcStat.st_size - writeLen * i);
+			} else {
+				sprintf(pWriteLen,"%d",writeLen);
 			}
+			sprintf(off, "%d", writeLen * i);
 			char path[90];
 			if((getcwd(path, sizeof(path))) == NULL) {
 				print_error("getcwd");
 			}
 			strcat(path, "/do_copy");
-			if((execlp(path, "do_copy", p + writeLen * i,(int *) &writeLen, argv[2], NULL)) == -1) {
+			if((execlp(path, "do_copy", p, pWriteLen, argv[2], off, NULL)) == -1) {
 				print_error("execl");
 			}
 
