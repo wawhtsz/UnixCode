@@ -44,13 +44,11 @@ int main() {
 		exit(1);
 	}
 
-	printf("connecting \n");
 	clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_addr, &clnt_addr_len);
 	if(clnt_sock == -1){
 		perror("accept");
 		exit(1);
 	}
-	printf("connect %d\n", clnt_sock);
 
 	while(1) {
 		int count = 0;
