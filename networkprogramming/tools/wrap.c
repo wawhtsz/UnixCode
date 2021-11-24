@@ -44,7 +44,7 @@ int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen) {
 	int fd;
 
 again:
-	if(fd = accept(sockfd, addr, addrlen) == -1) {
+	if((fd = accept(sockfd, addr, addrlen)) == -1) {
 		if(errno == ECONNABORTED || errno == EINTR)
 			goto again;
 		else
