@@ -8,15 +8,25 @@
 
 #include<stdio.h>
 #include<unistd.h>
+#include<stdlib.h>
 #include<arpa/inet.h>
 #include<sys/socket.h>
 #include<string.h>
 #include<ctype.h>
+#include<sys/types.h>
+#include<sys/wait.h>
+#include<signal.h>
 
 #include"wrap.h"
 
 #define CLNTNUM 5
 
+
+void wait_child(int signo) {
+	while(waitpid(0, NULL, WNOHANG) > 0) {
+		printf("one client exit\n");
+	}
+}
 
 int main(int argc, char *argv[]) {
 
@@ -26,7 +36,7 @@ int main(int argc, char *argv[]) {
 
 	}
 
-//	signal(SIG_CHLD, wait_child);
+	signal(SIGCHLD, wait_child);
 
 	int serv_sock, clnt_sock;
 	struct sockaddr_in serv_addr, clnt_addr;
@@ -52,7 +62,6 @@ int main(int argc, char *argv[]) {
 				ntohs(clnt_addr.sin_port));
 
 		pid = fork();
-		printf("pid:%d\n", pid);
 		if(pid == 0) {
 			Close(serv_sock);
 			break;
@@ -71,7 +80,7 @@ int main(int argc, char *argv[]) {
 			count = Read(clnt_sock, buf, sizeof(buf));
 			if(count == 0) {
 				Close(clnt_sock);
-				exit(1);
+				break;
 			}
 			int i = 0;
 			for(; i < count; i++) {
@@ -80,5 +89,6 @@ int main(int argc, char *argv[]) {
 			Write(clnt_sock, buf, count);
 		}
 	}
+	return 0;
 }
 
